@@ -1,30 +1,39 @@
 #https://www.acmicpc.net/problem/1520
+import sys
 
-def dfs(M, N, data, visited, row = 0, col = 0):
-    if row == M-1 and col == N-1:
-        return 1
-    answer= 0
-    visited[row][col]=True
-    if row>0:
-        if (data[row][col]>data[row-1][col] and
-            not visited[row-1][col]):
-            answer+=dfs(M, N, data,visited,row-1,col)
-    if row<M-1:
-        if (data[row][col]>data[row+1][col] and
-            not visited[row+1][col]):
-            answer+=dfs(M, N, data,visited,row+1,col)
-    if col>0:
-        if (data[row][col]>data[row][col-1] and
-            not visited[row][col-1]):
-            answer+=dfs(M, N, data,visited,row,col-1)
-    if col<N-1:
-        if (data[row][col]>data[row][col+1] and
-            not visited[row][col+1]):
-            answer+=dfs(M, N, data,visited,row,col+1)
-    visited[row][col]=False
-    return answer
+def f(i,j,data,dp,N,M):
+    dp[i][j]=0
+    if i>0:
+        if data[i-1][j]>data[i][j]:
+            if dp[i-1][j]<0:
+                f(i-1,j,data,dp,N,M)
+            dp[i][j]+=dp[i-1][j]
+    if j>0:
+        if data[i][j-1]>data[i][j]:
+            if dp[i][j-1]<0:
+                f(i,j-1,data,dp,N,M)
+            dp[i][j]+=dp[i][j-1]
+    if i<N-1:
+        if data[i+1][j]>data[i][j]:
+            if dp[i+1][j]<0:
+                f(i+1,j,data,dp,N,M)
+            dp[i][j]+=dp[i+1][j]
+    if j<M-1:
+        if data[i][j+1]>data[i][j]:
+            if dp[i][j+1]<0:
+                f(i,j+1,data,dp,N,M)
+            dp[i][j]+=dp[i][j+1]
 
-M, N = map(int,input().split())
-data = [list(map(int, input().split())) for _ in range(M)]
-visited = [[False]*N for _ in range(M)]
-print(dfs(M, N, data, visited))
+    
+    
+N,M=map(int,sys.stdin.readline().split())
+data=[list(map(int,sys.stdin.readline().split())) for _ in range(N)]
+dp=[[-1]*M for _ in range(N)]
+dp[0][0]=1
+
+for i in range(N):
+    for j in range(M):
+        if dp[i][j]<0:
+            f(i,j,data,dp,N,M)
+
+print(dp[-1][-1])
