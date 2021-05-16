@@ -15,95 +15,83 @@ def continuous(x1,y1,lines,x2,y2):
                     return False
     return True
 
-def new_color(i,j,N,M,lines,colored,groups):
-    colored[i][j] = True
-    groups[(i,j)] ={(i,j)}
-    if i > 0:
-        if not colored[i-1][j]:
-            if continuous(i,j,lines,i-1,j):
-                colored[i-1][j] = True
-                groups[(i,j)].add((i-1,j))
-    if i < N-1:
-        if not colored[i+1][j]:
-            if continuous(i,j,lines,i+1,j):
-                colored[i+1][j] = True
-                groups[(i,j)].add((i+1,j))
-    if j > 0:
-        if not colored[i][j-1]:
-            if continuous(i,j,lines,i,j-1):
-                colored[i][j-1] = True
-                groups[(i,j)].add((i,j-1))
-    if j < M-1:
-        if not colored[i][j+1]:
-            if continuous(i,j,lines,i,j+1):
-                colored[i][j+1] = True
-                groups[(i,j)].add((i,j+1))
-  
-def merge_color(key,x,y,groups):
-    for k, v in groups.items():
-        if (x,y) in v:
-            key2 = k
+def group_color(color1,color2,groups):
+    for i, group in enumerate(groups):
+        if color1 in group:
+            g1 = groups.pop(i)
             break
-    groups[key]=groups[key].union(groups.pop(key2))
-    
-def add_color(i,j,N,M,lines,colored,groups):
-    for k, v in groups.items():
-        if (i,j) in v:
-            key = k
+    for i, group in enumerate(groups):
+        if color2 in group:
+            g2 = groups.pop(i)
             break
+    try:
+        groups.append(g1.union(g2))
+    except UnboundLocalError as e:
+        groups.append(g1)
+
     
+def color_neighbors(i,j,N,M,lines,colors,canvas,color,count):
     if i > 0:
         if continuous(i,j,lines,i-1,j):
-            if not colored[i-1][j]:
-                colored[i-1][j] = True
-                groups[key].add((i-1,j))
+            if canvas[i-1][j] < 0:
+                canvas[i-1][j] = color
+                count[color]+=1
             else:
-                merge_color(key,i-1,j,groups)
+                group_color(color,canvas[i-1][j],groups)
     if i < N-1:
         if continuous(i,j,lines,i+1,j):
-            if not colored[i+1][j]:
-                colored[i+1][j] = True
-                groups[key].add((i+1,j))
+            if canvas[i+1][j] < 0:
+                canvas[i+1][j] = color
+                count[color]+=1
             else:
-                merge_color(key,i+1,j,groups)
+                group_color(color,canvas[i+1][j],groups)
     if j > 0:
         if continuous(i,j,lines,i,j-1):
-            if not colored[i][j-1]:
-                colored[i][j-1] = True
-                groups[key].add((i,j-1))
+            if canvas[i][j-1] < 0:
+                canvas[i][j-1] = color
+                count[color]+=1
             else:
-                merge_color(key,i,j-1,groups)
+                group_color(color,canvas[i][j-1],groups)
     if j < M-1:
         if continuous(i,j,lines,i,j+1):
-            if not colored[i][j+1]:
-                colored[i][j+1] = True
-                groups[key].add((i,j+1))
+            if canvas[i][j+1] < 0:
+                canvas[i][j+1] = color
+                count[color]+=1
             else:
-                merge_color(key,i,j+1,groups)
-                
+                group_color(color,canvas[i][j+1],groups)
+
+
 N, M = map(int,input().split())
 T = int(input())
 lines = [list(map(int, input().split())) for _ in range(T)]
 
-colored = [[False]*M for _ in range(N)]
-groups = dict()
+canvas = [[-1]*M for _ in range(N)]
+next_color = 0
+groups = []
+count = []
 
 for i in range(N):
     for j in range(M):
-        if not colored[i][j]:
-            new_color(i,j,N,M,lines,colored,groups)
-        else:
-            add_color(i,j,N,M,lines,colored,groups)
-
+        if canvas[i][j] < 0:
+            canvas[i][j] = next_color
+            groups.append({canvas[i][j]})
+            count.append(1)
+            next_color += 1
+        color = canvas[i][j]
+        color_neighbors(i,j,N,M,lines,groups,canvas,color,count)
+        
 max_area = -1
 min_area = -1
-for group in groups.values():
-    area = len(group)
+
+for group in groups:
+    area = 0
+    for i in group:
+        area+=count[i]
     max_area = max(max_area,area)
     if min_area<0:
         min_area = area
     else:
         min_area = min(min_area,area)
-        
+    
 print(max_area) 
 print(min_area)
