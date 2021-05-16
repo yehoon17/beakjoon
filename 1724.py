@@ -15,46 +15,95 @@ def continuous(x1,y1,lines,x2,y2):
                     return False
     return True
 
-def color(i,j,N,M,lines,colored):
+def new_color(i,j,N,M,lines,colored,groups):
     colored[i][j] = True
-    group =[[i,j]]
+    groups[(i,j)] ={(i,j)}
     if i > 0:
         if not colored[i-1][j]:
             if continuous(i,j,lines,i-1,j):
-                group += color(i-1,j,N,M,lines,colored)
+                colored[i-1][j] = True
+                groups[(i,j)].add((i-1,j))
     if i < N-1:
         if not colored[i+1][j]:
             if continuous(i,j,lines,i+1,j):
-                group += color(i+1,j,N,M,lines,colored)
+                colored[i+1][j] = True
+                groups[(i,j)].add((i+1,j))
     if j > 0:
         if not colored[i][j-1]:
             if continuous(i,j,lines,i,j-1):
-                group += color(i,j-1,N,M,lines,colored)
+                colored[i][j-1] = True
+                groups[(i,j)].add((i,j-1))
     if j < M-1:
         if not colored[i][j+1]:
             if continuous(i,j,lines,i,j+1):
-                group += color(i,j+1,N,M,lines,colored)
-    return group
-                
+                colored[i][j+1] = True
+                groups[(i,j)].add((i,j+1))
+  
+def merge_color(key,x,y,groups):
+    for k, v in groups.items():
+        if (x,y) in v:
+            key2 = k
+            break
+    groups[key]=groups[key].union(groups.pop(key2))
     
+def add_color(i,j,N,M,lines,colored,groups):
+    for k, v in groups.items():
+        if (i,j) in v:
+            key = k
+            break
+    
+    if i > 0:
+        if continuous(i,j,lines,i-1,j):
+            if not colored[i-1][j]:
+                colored[i-1][j] = True
+                groups[key].add((i-1,j))
+            else:
+                merge_color(key,i-1,j,groups)
+    if i < N-1:
+        if continuous(i,j,lines,i+1,j):
+            if not colored[i+1][j]:
+                colored[i+1][j] = True
+                groups[key].add((i+1,j))
+            else:
+                merge_color(key,i+1,j,groups)
+    if j > 0:
+        if continuous(i,j,lines,i,j-1):
+            if not colored[i][j-1]:
+                colored[i][j-1] = True
+                groups[key].add((i,j-1))
+            else:
+                merge_color(key,i,j-1,groups)
+    if j < M-1:
+        if continuous(i,j,lines,i,j+1):
+            if not colored[i][j+1]:
+                colored[i][j+1] = True
+                groups[key].add((i,j+1))
+            else:
+                merge_color(key,i,j+1,groups)
+                
 N, M = map(int,input().split())
 T = int(input())
 lines = [list(map(int, input().split())) for _ in range(T)]
 
 colored = [[False]*M for _ in range(N)]
-
-max_area = -1
-min_area = -1
+groups = dict()
 
 for i in range(N):
     for j in range(M):
         if not colored[i][j]:
-            area = len(color(i,j,N,M,lines,colored))
-            max_area = max(area,max_area)
-            if min_area < 0:
-                min_area = area
-            else:
-                min_area = min(area,min_area)
-                
+            new_color(i,j,N,M,lines,colored,groups)
+        else:
+            add_color(i,j,N,M,lines,colored,groups)
+
+max_area = -1
+min_area = -1
+for group in groups.values():
+    area = len(group)
+    max_area = max(max_area,area)
+    if min_area<0:
+        min_area = area
+    else:
+        min_area = min(min_area,area)
+        
 print(max_area) 
 print(min_area)
