@@ -20,19 +20,19 @@ def color(i,j,N,M,lines,colored):
     group =[[i,j]]
     if i > 0:
         if not colored[i-1][j]:
-            if continuous(i,j,line,i-1,j):
+            if continuous(i,j,lines,i-1,j):
                 group += color(i-1,j,N,M,lines,colored)
     if i < N-1:
         if not colored[i+1][j]:
-            if continuous(i,j,line,i+1,j):
+            if continuous(i,j,lines,i+1,j):
                 group += color(i+1,j,N,M,lines,colored)
     if j > 0:
         if not colored[i][j-1]:
-            if continuous(i,j,line,i,j-1):
+            if continuous(i,j,lines,i,j-1):
                 group += color(i,j-1,N,M,lines,colored)
     if j < M-1:
         if not colored[i][j+1]:
-            if continuous(i,j,line,i,j+1):
+            if continuous(i,j,lines,i,j+1):
                 group += color(i,j+1,N,M,lines,colored)
     return group
                 
