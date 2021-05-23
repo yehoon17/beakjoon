@@ -1,3 +1,5 @@
+#https://www.acmicpc.net/problem/11057
+
 N=int(input())
 dp=[1 for i in range(10)]
 for _ in range(N-1):
