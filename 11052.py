@@ -1,3 +1,5 @@
+# https://www.acmicpc.net/problem/11052
+
 N=int(input())
 cards=list(map(int,input().split()))
 dp=[0]+cards
