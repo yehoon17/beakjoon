@@ -1,3 +1,5 @@
+# https://www.acmicpc.net/problem/2193
+
 N=int(input())
 dp=[1,0]
 if N>1:
