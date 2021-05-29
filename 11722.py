@@ -1,3 +1,5 @@
+#https://www.acmicpc.net/problem/11722
+
 N=int(input())
 seq=list(map(int,input().split()))
 
