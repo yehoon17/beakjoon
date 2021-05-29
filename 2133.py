@@ -1,3 +1,5 @@
+#https://www.acmicpc.net/problem/2133
+
 N=int(input())
 dp=[3,11]
 if N%2==0:
