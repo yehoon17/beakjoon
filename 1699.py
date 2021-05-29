@@ -1,3 +1,5 @@
+#https://www.acmicpc.net/problem/1699
+
 N=int(input())
 squares=[i**2 for i in range(1,318)]
 dp=[i for i in range(1+N)]
