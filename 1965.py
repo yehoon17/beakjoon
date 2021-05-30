@@ -1,3 +1,5 @@
+#https://www.acmicpc.net/problem/1965
+
 n=int(input())
 box=list(map(int,input().split()))
 dp=[1]*n
