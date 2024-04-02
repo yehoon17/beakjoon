@@ -19,7 +19,6 @@ class Room:
         for i in range(self.n_rows):
             for j in range(self.n_cols):
                 if (dust := self.dust[i][j]) > 0:
-                    # print(i, j)
                     dust_diffused = dust // 5
                     for dx, dy in [[0, 1], [0, -1], [-1, 0], [1, 0]]:
                         x = i + dx
@@ -28,7 +27,6 @@ class Room:
                             new_dust[x][y] += dust_diffused
                             dust -= dust_diffused
                     new_dust[i][j] += dust
-                    # print(*new_dust, sep='\n')
         self.dust = new_dust
         
     def clean(self):
@@ -63,7 +61,7 @@ class Room:
         return total
     
 
-r, c, t = map(int, input())
+r, c, t = map(int, input().split())
 grid = []
 for _ in range(r):
     grid.append(list(map(int, input().split())))
