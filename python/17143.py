@@ -40,50 +40,37 @@ class Shark:
     def move(self, i, j, n_rows, n_cols):
         #1인 경우는 위, 2인 경우는 아래, 3인 경우는 오른쪽, 4인 경우는 왼쪽
         if self.direction < 3:
+            dx = self.speed*(-1)**self.direction
+            x = i + dx
+            if -1 < x < n_rows:
+                return x, j
+
             n = n_rows * 2 - 2
-            dx = self.speed % n
-            if self.direction == 1:
-                # print(i, dx, n)
-                x = i - dx
-                if x < 0:
-                    x = -x
-                    self.direction = 2
-                    if x > n_rows - 1:
-                        x = n + 1 - x
-                        self.direction = 1
-            else:
-                x = i + dx
-                if x > n_rows - 1:
-                    x = n - x
-                    self.direction = 1
-                    if x < 0:
-                        x = -x
-                        self.direction = 2                        
+            x %= n
+            # print(f'{-1 + self.direction} <= {x} < {n_rows - 2 + self.direction}')
+            if not (-1 + self.direction <= x < n_rows - 2 + self.direction):
+                self.direction = 3 - self.direction
+                
+            x = min(x, n-x)
             return x, j
+            
         else:
+            dy = self.speed*(-1)**(self.direction+1)
+            y = j + dy
+            if -1 < y < n_cols:
+                return i, y
+
             n = n_cols * 2 - 2
-            dy = self.speed % n
-            if self.direction == 4:
-                y = j - dy
-                if y < 0:
-                    y = -y
-                    self.direction = 3
-                    if y > n_cols - 1:
-                        y = n + 1 - y
-                        self.direction = 4
-            else:
-                y = j + dy
-                if y > n_cols - 1:
-                    y = n - y
-                    self.direction = 4
-                    if y < 0:
-                        y = -y
-                        self.direction = 3   
+            y %= n
+            
+            if not (4 - self.direction <= y < n_cols + 3 - self.direction):
+                self.direction = 7 - self.direction
+                
+            y = min(y, n-y)
             return i, y
     
     def __str__(self):
-        return f'speed: {self.speed}, d: {self.direction}, size: {self.size}'
-        
+        return f'speed: {self.speed}, d: {arrows[self.direction]}, size: {self.size}'
         
 n_rows, n_cols, n_sharks = map(int, input().split())
 pool = Pool(n_rows, n_cols)
@@ -99,3 +86,4 @@ for j in range(n_cols):
 
 print(total_size)
     
+        
